@@ -1,0 +1,7 @@
+/vendor
+/var
+/docker
+
+.dockerignore
+
+!/docker/nginx/default.conf

@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx:latest
+    networks:
+      - iris
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - tika
+      - elasticsearch
+      - php
+
+  php:
+    image: php:8.1-fpm
+    networks:
+      - iris
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: php
+    restart: unless-stopped
+    expose:
+      - 9000
+
+  elasticsearch:
+    image: elasticsearch:8.2.1
+    networks:
+      - iris
+    container_name: elasticsearch
+    restart: unless-stopped
+    volumes:
+      - ./docker/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    expose:
+      - 9200
+
+  tika:
+    image: apache/tika:latest
+    networks:
+      - iris
+    container_name: tika
+    restart: unless-stopped
+    expose:
+      - 9998
+
+networks:
+  iris:
